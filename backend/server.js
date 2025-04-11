@@ -61,6 +61,13 @@ app.post("/login", async (req, res) => {
 
 });
 
+//logout
+app.post("/logout", (req, res) => {
+    //simply sends status
+    // frontend: delete the token from cookies
+    res.status(200).json({ message: "Logout successful" });
+  });
+
 //register
 app.post("/register", async (req, res) => {
 

@@ -1,0 +1,624 @@
+/* Main styles for album collection app */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #1e1e1e; /* Darker gray background to match your screenshot */
+  color: #fff;
+}
+
+/* Container for the entire application */
+.app-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center everything horizontally */
+}
+
+/* Navbar styling */
+.navbar {
+  background-color: #1e1e1e; /* Match the background */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  width: 100%;
+  max-width: 1200px; /* Control the max width */
+}
+
+.brand {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #4b9cd3; /* Light blue accent */
+}
+
+.logout-btn {
+  padding: 8px 15px;
+  background: transparent;
+  color: #4b9cd3; /* Light blue accent */
+  border: 1px solid #4b9cd3;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.logout-btn:hover {
+  background-color: #4b9cd3;
+  color: #222;
+}
+
+/* Search bar */
+.search-container {
+  flex-grow: 1;
+  max-width: 600px;
+  margin: 0 20px;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: #4b9cd3;
+}
+
+/* Main content area */
+.main-content {
+  padding: 30px;
+  flex-grow: 1;
+  width: 100%;
+  max-width: 1200px; /* Control the max width */
+  margin: 0 auto;
+}
+
+/* Album grid layout - centered three columns */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Individual album card */
+.album-card {
+  background-color: #222;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s;
+  width: 100%; /* Let the card take full width of its grid cell */
+}
+
+.album-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Album cover area */
+.album-cover {
+  width: 100%;
+  aspect-ratio: 1/1; /* Square aspect ratio */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #444;
+  position: relative;
+  color: #777;
+  font-size: 18px;
+  background-color: #1a1a1a; /* Slightly darker than the card */
+}
+
+/* Favorite star button */
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(34, 34, 34, 0.8); /* Darker background */
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 0; /* Remove any padding that might affect shape */
+  overflow: hidden; /* Ensure content doesn't break circular shape */
+  z-index: 10;
+  box-sizing: content-box; /* Ensure width/height are respected exactly */
+}
+
+.favorite-btn span {
+  font-size: 28px;
+  line-height: 1; /* Prevent line height from affecting shape */
+  display: block; /* Ensure star is treated as block element */
+}
+
+.not-favorite {
+  color: #888;
+}
+
+.is-favorite {
+  color: #ffd700; /* Gold star */
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Album information area */
+.album-info {
+  padding: 15px;
+}
+
+.album-info div {
+  margin-bottom: 6px;
+}
+
+/* Match the layout in the screenshot */
+.title, .artist, .year, .favorite-track, .rating {
+  display: flex;
+}
+
+.title span, .artist span, .year span, .favorite-track span, .rating span {
+  color: #4b9cd3; /* Light blue for labels */
+  margin-right: 5px;
+  min-width: 100px; /* Keep labels aligned */
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .album-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .album-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .navbar {
+    flex-direction: column;
+    padding: 10px;
+  }
+  
+  .search-container {
+    width: 100%;
+    margin: 10px 0;
+  }
+  
+  .logout-btn {
+    align-self: flex-end;
+  }
+}
+
+/* Album cover styles for consistent square sizing */
+
+.album-card {
+  background-color: #222;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s;
+  width: 100%;
+}
+
+.album-cover {
+  width: 100%;
+  aspect-ratio: 1/1; /* Force square aspect ratio */
+  position: relative;
+  border-bottom: 1px solid #444;
+  background-color: #1a1a1a;
+  overflow: hidden;
+  height: 0;
+  padding-bottom: 100%; /* Alternative way to ensure square */
+}
+
+.album-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Maintain aspect ratio, crop if needed */
+  display: block;
+}
+
+/* Fixed height alternative if aspect-ratio isn't working */
+@supports not (aspect-ratio: 1/1) {
+  .album-cover {
+    height: 0;
+    padding-bottom: 100%;
+    position: relative;
+  }
+}
+
+/* Set a consistent grid cell size */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(200px, 1fr));
+  gap: 30px;
+  width: 100%;
+}
+
+.logo-image {
+  height: 100px;
+  width: auto;
+}
+
+/* Edit button styling */
+.edit-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px; /* Positioned on the left side, opposite to the favorite star */
+  background-color: rgba(34, 34, 34, 0.8);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+  z-index: 10;
+  box-sizing: content-box;
+  opacity: 0.7; /* Slightly transparent by default */
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.edit-btn:hover {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.edit-btn span {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Make edit icon visible on hover for a cleaner look */
+.album-card .edit-btn {
+  opacity: 0;
+}
+
+.album-card:hover .edit-btn {
+  opacity: 0.7;
+}
+
+.album-card:hover .edit-btn:hover {
+  opacity: 1;
+}
+
+/* Modal styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.edit-album-modal {
+  background-color: #222;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #444;
+  padding-bottom: 10px;
+}
+
+.modal-header h2 {
+  color: #4b9cd3;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+
+/* Form elements inside modal */
+.edit-album-modal .form-group {
+  margin-bottom: 15px;
+}
+
+.edit-album-modal label {
+  display: block;
+  margin-bottom: 5px;
+  color: #ccc;
+}
+
+.edit-album-modal input {
+  width: 100%;
+  padding: 10px;
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.edit-album-modal input:focus {
+  outline: none;
+  border-color: #4b9cd3;
+}
+
+/* Cover preview */
+.album-preview {
+  margin: 15px 0;
+  text-align: center;
+}
+
+.album-preview h3 {
+  color: #ccc;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.cover-preview {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 4px;
+  border: 1px solid #444;
+}
+
+/* Modal action buttons */
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.save-btn, .delete-btn, .cancel-btn {
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.save-btn {
+  background-color: #4b9cd3;
+  color: #fff;
+  border: none;
+  flex-grow: 1;
+}
+
+.save-btn:hover {
+  background-color: #3a8bc2;
+}
+
+.delete-btn {
+  background-color: #d33d3d;
+  color: #fff;
+  border: none;
+}
+
+.delete-btn:hover {
+  background-color: #c42f2f;
+}
+
+.cancel-btn {
+  background-color: transparent;
+  color: #ccc;
+  border: 1px solid #444;
+}
+
+.cancel-btn:hover {
+  background-color: #333;
+}
+
+/* Updated sidebar styles - Replace in your App.css */
+
+/* App container with sidebar layout */
+.app-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Sidebar styles - positioned on left */
+.sidebar {
+  width: 80px;
+  background-color: #222;
+  border-right: 1px solid #444;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0;
+  position: fixed;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  justify-content: center; /* Center items vertically */
+  z-index: 100;
+}
+
+.sidebar-logo {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.sidebar-logo img {
+  width: 50px;
+  height: 50px;
+}
+
+
+/* Icon container for sidebar items */
+.sidebar-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  border-radius: 8px;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-icon:hover {
+  background-color: #333;
+  color: #4b9cd3;
+}
+
+.sidebar-icon.active {
+  background-color: #4b9cd3;
+  color: #fff;
+}
+
+/* Main content container - adjusted to accommodate sidebar */
+.content-container {
+  flex-grow: 1;
+  margin-left: 80px; /* Match sidebar width */
+  width: calc(100% - 80px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Divider for sidebar sections */
+.sidebar-divider {
+  width: 50px;
+  height: 1px;
+  background-color: #444;
+  margin: 10px 0;
+}
+
+/* Icon for favorite albums */
+.star-icon {
+  font-size: 24px;
+}
+
+.add-album-container {
+  width: 100%;
+  max-width: 500px; /* Limits the form width */
+  margin: 0 auto; /* Centers the form horizontally */
+  padding: 20px;
+  background-color: #222; /* Dark background for form */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+  color: #fff; /* White text */
+}
+
+.add-album-header {
+  display: flex;
+  justify-content: center; /* Centers horizontally */
+  align-items: center; /* Centers vertically */
+  margin-bottom: 20px;
+  border-bottom: 1px solid #444;
+  padding-bottom: 10px;
+  text-align: center; /* Ensures text is centered within the element */
+}
+
+/* Header for the form */
+.add-album-container h2 {
+  text-align: center;
+  color: #4b9cd3;
+  margin-bottom: 5px;
+}
+
+/* Form elements inside the container */
+.add-album-form .form-group {
+  margin-bottom: 15px; /* Space between each input group */
+}
+
+.add-album-form label {
+  display: block;
+  margin-bottom: 5px;
+  color: #ccc; /* Light gray label text */
+}
+
+.add-album-form input {
+  width: 100%;
+  padding: 10px;
+  background-color: #333; /* Dark background for inputs */
+  border: 1px solid #444; /* Border to separate inputs */
+  border-radius: 4px; /* Rounded corners for inputs */
+  color: #fff; /* White text inside inputs */
+  font-size: 1rem; /* Set font size */
+}
+
+.add-album-form input:focus {
+  outline: none;
+  border-color: #4b9cd3; /* Focus border color */
+}
+
+/* Buttons inside the form */
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px; /* Space between buttons */
+}
+
+.submit-btn, .cancel-btn {
+  padding: 10px 20px;
+  background-color: #4b9cd3; /* Blue background for buttons */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-btn:hover, .cancel-btn:hover {
+  background-color: #195b8e; /* Slightly darker blue when hovering */
+}
+
+.cancel-btn {
+  background-color: #f44336; /* Red background for cancel */
+}
+
+.cancel-btn:hover {
+  background-color: #940806; /* Darker red when hovering */
+}
+
+/* Optional small text under input for cover URL */
+.add-album-form small {
+  font-size: 0.875rem; /* Smaller font for the helper text */
+  color: #aaa; /* Light gray text */
+}

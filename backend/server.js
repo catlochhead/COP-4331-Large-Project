@@ -6,6 +6,7 @@ const UserModel = require("./models/User");
 const app = express();
 
 const MongoClient = require("mongodb").MongoClient;
+const ObjectId = require("mongodb").ObjectId;
 const url = "mongodb+srv://cop4331:group6@cluster0.owhoofa.mongodb.net/album-app?retryWrites=true&w=majority&appName=Cluster0/album-app";
 const client = new MongoClient(url);
 client.connect();
@@ -82,6 +83,77 @@ app.post("/register", async (req, res) => {
         res.status(500).json({ error: "Something went wrong. Try again later." });
     }
 });
+
+//Delete Album
+app.post('/api/deletealbum', async (req, res) =>
+{
+  // incoming: albumId
+  // outgoing: error
+
+  const { albumId } = req.body;
+  let error = '';
+  
+  try
+  {
+    const db = client.db();
+    const result = await db.collection('Albums').deleteOne({ _id: new ObjectId(albumId) });
+    console.log('albumId:', albumId);
+  
+    if (result.deletedCount === 0)
+    {
+      error = 'Album not deleted';
+    }
+    else if (result.deletedCount === 1)
+    {
+      error = 'Album deleted';
+    }
+  }
+  catch (e)
+  {
+    console.error('Error deleting album:', e);
+    error = e.toString();
+  }
+  
+  const ret = { error: error };
+  res.status(200).json(ret);
+  });
+  
+
+//Edit Album
+app.post('/api/editalbum', async (req, res) =>
+{
+  // incoming: albumId, updatedFields
+  // outgoing: error
+
+  const { albumId, updatedFields } = req.body;
+  let error = '';
+
+  try
+  {
+    const db = client.db();
+    const result = await db.collection('Albums').updateOne({ _id: new ObjectId(albumId) },{ $set: updatedFields });
+
+    if (result.matchedCount === 0)
+    {
+      error = 'Album not found';
+    }
+    else if (result.modifiedCount === 1)
+    {
+      error = 'Album updated';
+    }
+  }
+  catch (e)
+  {
+    console.error('Error editing album:', e);
+    error = e.toString();
+  }
+
+  const ret = { error: error };
+  res.status(200).json(ret);
+});
+  
+
+
 
 app.listen(5000, () => {
   console.log("Server is up");

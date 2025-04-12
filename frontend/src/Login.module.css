@@ -1,0 +1,142 @@
+ .loginContainer {
+    background-color: #1e1e1e;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translateX(80%);
+    height: 87vh;
+    margin-left: 50px;
+  }
+
+  .albumPreview {
+    height: 800px;
+    object-fit: cover;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translateX(-60%);
+    /* margin-right: -100px; */
+  }
+
+  .registerContainer {
+    background-color: #1e1e1e;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 87vh;
+    transform: translateX(80%);
+    margin-left: 50px;
+  }
+  
+  .loginBox {
+    background-color: #474747;
+    padding: 3rem;
+    border-radius: 2rem;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem; /* increased gap between sections */
+  }
+  
+  input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: none;
+    background: #eee;
+    color: #333;
+    font-size: 0.9rem;
+  }
+  
+  .passwordContainer {
+    position: relative;
+  }
+  
+  .eyeIcon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+  
+  .loginBtn {
+    background: #72d3fe;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000;
+    margin: 1rem 0;
+  }
+  
+  .divider span {
+    flex-grow: 1;
+    height: 1px;
+    background: #000000;
+  }
+
+  .seePass{
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .signupLink {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #aaa;
+  }
+  
+  .signupLink a {
+    color: #98ddfc;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  /* Main styles for album collection app */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #1e1e1e; /* Darker gray background to match your screenshot */
+  color: #fff;
+}
+
+.logoImage {
+  height: 100px;
+  object-fit: cover;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; 
+}
+
+input {
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: #eee;
+  color: #333;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+

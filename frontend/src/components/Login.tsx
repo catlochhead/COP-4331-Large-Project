@@ -1,43 +1,85 @@
 import styles from '../Login.module.css';
+import React from 'react';
 
-const Login: React.FC = () => {
+function Login()
+{
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle login logic (call backend API)
+  const [message,setMessage] = React.useState('');
+  const [loginName,setLoginName] = React.useState('');
+  const [loginPassword,setPassword] = React.useState('');
+
+  async function doLogin(event: any): Promise<void> {
+    event.preventDefault();
+
+    var obj = { login: loginName, password: loginPassword };
+    var js = JSON.stringify(obj);
+    console.log(js);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/login',
+        { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+
+      var res = JSON.parse(await response.text());
+
+      if (res.id <= 0) {
+        setMessage('User/Password combination incorrect');
+      }
+      else {
+        var user = { firstName: res.firstName, lastName: res.lastName, id: res.id }
+        localStorage.setItem('user_data', JSON.stringify(user));
+
+        setMessage('');
+        window.location.href = '/';
+      }
+    }
+    catch (error: any) {
+      alert(error.toString());
+      return;
+    }
   };
 
-  return (
-    <div><img src="/src/assets/album-preview1.png" alt="Albums" className={styles.albumPreview}/>
-    <div className={styles.loginContainer}>
-      <div className={styles.loginBox}>
-        <img src="/src/assets/logo.png" alt="Track Record" className={styles.logoImage}/>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Username"
-            required
-          />
-          <div className={styles.passwordContainer}>
-            <input
-              type={'password'}
-              placeholder="Password"
-              required
-            />
+  function handleSetLoginName( e: any ) : void
+      {
+        setLoginName( e.target.value );
+      }
+    
+    function handleSetPassword( e: any ) : void
+      {
+        setPassword( e.target.value );
+      }
+
+      return (
+        <div><img src="/src/assets/album-preview1.png" alt="Albums" className={styles.albumPreview}/>
+        <div className={styles.loginContainer}>
+          <div className={styles.loginBox}>
+            <img src="/src/assets/logo.png" alt="Track Record" className={styles.logoImage}/>
+            <form onSubmit={doLogin}>
+              <input
+                type="text"
+                placeholder="Username"
+                required 
+                onChange={handleSetLoginName}
+              />
+              <div className={styles.passwordContainer}>
+                <input
+                  type={'password'}
+                  placeholder="Password"
+                  required
+                  onChange={handleSetPassword}/>
+              </div>
+              <span id="loginResult">{message}</span>
+              <button type="submit" className={styles.loginBtn}>
+                Login
+              </button>
+            </form>
+            <div className={styles.divider}><span className={styles.divider}/></div>
+            <div className={styles.signupLink}>
+              Don&apos;t have an account? <a href="/register">Sign up</a>
+            </div>
           </div>
-          {/* <div><input type="check-box">Show Password</input></d iv> */}
-          <button type="submit" className={styles.loginBtn}>
-            Login
-          </button>
-        </form>
-        <div className={styles.divider}><span className={styles.divider}/></div>
-        <div className={styles.signupLink}>
-          Don&apos;t have an account? <a href="/register">Sign up</a>
         </div>
-      </div>
-    </div>
-    </div>
-  );
+        </div>
+      );
 };
 
 export default Login;

@@ -1,5 +1,3 @@
-//emulated from a youtube tutorial
-
 const mongoose = require('mongoose')
 
 const UserSchema = new mongoose.Schema({

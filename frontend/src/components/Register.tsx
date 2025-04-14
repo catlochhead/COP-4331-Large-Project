@@ -1,4 +1,4 @@
-import styles from '../Login.module.css';
+import styles from '../styles/Login.module.css';
 import React from 'react';
 
 function Register()
@@ -59,10 +59,10 @@ function Register()
       }
 
       return (
-        <div><img src="/src/assets/album-preview1.png" alt="Albums" className={styles.albumPreview}/>
+        <div><img src="/src/components/album-preview1.png" alt="Albums" className={styles.albumPreview}/>
         <div className={styles.registerContainer}>
           <div className={styles.loginBox}>
-            <img src="/src/assets/logo.png" alt="Track Record" className={styles.logoImage}/>
+            <img src="/src/components/logo.png" alt="Track Record" className={styles.logoImage}/>
             <form onSubmit={doRegister}>
               <input
                 type="text"

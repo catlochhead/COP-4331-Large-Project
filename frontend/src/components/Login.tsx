@@ -1,4 +1,4 @@
-import styles from '../Login.module.css';
+import styles from '../styles/Login.module.css';
 import React from 'react';
 
 function Login()
@@ -16,7 +16,7 @@ function Login()
     console.log(js);
 
     try {
-      const response = await fetch('http://localhost:5000/api/login',
+      const response = await fetch('http://localhost:5000/api/users/login',
         { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
       var res = JSON.parse(await response.text());
@@ -34,6 +34,7 @@ function Login()
     }
     catch (error: any) {
       alert(error.toString());
+      setMessage("hi");
       return;
     }
   };
@@ -49,10 +50,10 @@ function Login()
       }
 
       return (
-        <div><img src="/src/assets/album-preview1.png" alt="Albums" className={styles.albumPreview}/>
+        <div><img src="/src/components/album-preview1.png" alt="Albums" className={styles.albumPreview}/>
         <div className={styles.loginContainer}>
           <div className={styles.loginBox}>
-            <img src="/src/assets/logo.png" alt="Track Record" className={styles.logoImage}/>
+            <img src="/src/components/logo.png" alt="Track Record" className={styles.logoImage}/>
             <form onSubmit={doLogin}>
               <input
                 type="text"
@@ -65,7 +66,8 @@ function Login()
                   type={'password'}
                   placeholder="Password"
                   required
-                  onChange={handleSetPassword}/>
+                  onChange={handleSetPassword}
+                  />
               </div>
               <span id="loginResult">{message}</span>
               <button type="submit" className={styles.loginBtn}>

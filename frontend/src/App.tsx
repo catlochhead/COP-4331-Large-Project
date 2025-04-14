@@ -2,9 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainPage from './pages/MainPage';
 import FavoritesPage from './pages/FavoritesPage';
 import CreateAlbumPage from './pages/CreateAlbumPage';
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
-import Sidebar from './components/Sidebar';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
   return (

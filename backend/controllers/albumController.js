@@ -47,6 +47,7 @@ const searchAlbums = async (req, res) => {
 
     const results = await Album.find(query);
     res.status(200).json(results);
+
   } catch (err) {
     console.error('Search failed:', err);
     res.status(500).json({ message: 'Search failed' });

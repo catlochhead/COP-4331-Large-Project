@@ -1,12 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
 require('dotenv').config();
 const UserModel = require('./models/User');
 const AlbumRoutes = require('./routes/albums');
-const jwt = require('jsonwebtoken');
+const session = require('express-session');  // Import express-session
 const cookieParser = require('cookie-parser');
 const { MongoClient, ObjectId } = require("mongodb");
+const cors = require('cors');
 
 const app = express();
 
@@ -16,13 +16,31 @@ const client = new MongoClient(url);
 client.connect();
 
 // Middleware
-app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(cookieParser());
 
-// CORS Headers
+// CORS Configuration
+const corsOptions = {
+  origin: 'http://localhost:5173',  // Your frontend's URL
+  credentials: true,  // Allow cookies to be sent
+};
+
+app.use(cors(corsOptions));  // Apply the CORS settings globally
+
+// Session Configuration
+app.use(session({
+  secret: 'your-session-secret',  // Secret for session encryption
+  resave: false,
+  saveUninitialized: false,
+  cookie: { 
+    httpOnly: true,
+    maxAge: 2 * 60 * 60 * 1000  // Session duration: 2 hours
+  }
+}));
+
+// CORS Headers for other configurations
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", 'http://localhost:5173'); // Set your frontend's URL here
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
@@ -34,24 +52,20 @@ app.use((req, res, next) => {
   next();
 });
 
-// Auth Middleware
+// Authentication Middleware for Session-based authentication
 const authenticate = (req, res, next) => {
-  const token = req.cookies.token;
-  if (!token) return res.status(401).json({ error: "No token provided" });
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.userId;
-    next();
-  } catch (err) {
-    return res.status(401).json({ error: "Invalid or expired token" });
+  if (!req.session.userId) {
+    return res.status(401).json({ message: 'Authentication required' });
   }
+  
+  req.userId = req.session.userId;  // Attach userId to the request object
+  next();
 };
 
 // Routes
 app.use('/api/Albums', authenticate, AlbumRoutes);
 
-// Login
+// Login Route
 app.post("/api/users/login", async (req, res) => {
   const { username, password } = req.body;
 
@@ -59,15 +73,8 @@ app.post("/api/users/login", async (req, res) => {
     const user = await UserModel.findOne({ username, password });
     if (!user) return res.status(401).json({ error: "Invalid username or password" });
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '2h'
-    });
-
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 2 * 60 * 60 * 1000
-    });
+    // Store userId in the session
+    req.session.userId = user._id;
 
     res.status(200).json({ username: user.username });
   } catch (err) {
@@ -75,7 +82,7 @@ app.post("/api/users/login", async (req, res) => {
   }
 });
 
-// Register
+// Register Route
 app.post("/api/users/register", async (req, res) => {
   const { username, password } = req.body;
 
@@ -92,9 +99,14 @@ app.post("/api/users/register", async (req, res) => {
   }
 });
 
-// Logout
+// Logout Route (Clear Session)
 app.post("/logout", (req, res) => {
-  res.status(200).json({ message: "Logout successful" });
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Logout failed' });
+    }
+    res.status(200).json({ message: 'Logout successful' });
+  });
 });
 
 // Delete Album

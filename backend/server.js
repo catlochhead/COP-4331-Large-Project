@@ -62,6 +62,13 @@ const authenticate = (req, res, next) => {
   next();
 };
 
+app.get('/api/current_user', (req, res) => {
+  if (!req.session || !req.session.userId) {
+    return res.status(401).json({ message: 'User not logged in' });
+  }
+  res.json({ userId: req.session.userId });
+});
+
 // Routes
 app.use('/api/Albums', authenticate, AlbumRoutes);
 

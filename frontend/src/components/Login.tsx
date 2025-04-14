@@ -1,24 +1,25 @@
 import styles from '../styles/Login.module.css';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [message, setMessage] = React.useState('');
   const [loginName, setLoginName] = React.useState('');
   const [loginPassword, setPassword] = React.useState('');
+  const navigate = useNavigate();
 
   async function doLogin(event: React.FormEvent): Promise<void> {
     event.preventDefault();
 
     const obj = { username: loginName, password: loginPassword };
     const js = JSON.stringify(obj);
-    console.log(js);
 
     try {
       const response = await fetch('http://localhost:5500/api/users/login', {
         method: 'POST',
         body: js,
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',  // Important: this allows cookies to be sent and received
+        credentials: 'include',
       });
 
       const res = await response.json();
@@ -27,21 +28,12 @@ function Login() {
         setMessage('User/Password combination incorrect');
       } else {
         setMessage('');
-        // Now that the server sends cookies, we don't need to save the token in localStorage
-        window.location.href = '/';  // Redirect after successful login
+        navigate('/main'); // ✅ This keeps the navigation within the React app
       }
     } catch (error: any) {
       alert(error.toString());
       setMessage('An error occurred, please try again.');
     }
-  }
-
-  function handleSetLoginName(e: React.ChangeEvent<HTMLInputElement>): void {
-    setLoginName(e.target.value);
-  }
-
-  function handleSetPassword(e: React.ChangeEvent<HTMLInputElement>): void {
-    setPassword(e.target.value);
   }
 
   return (
@@ -55,14 +47,14 @@ function Login() {
               type="text"
               placeholder="Username"
               required
-              onChange={handleSetLoginName}
+              onChange={(e) => setLoginName(e.target.value)}
             />
             <div className={styles.passwordContainer}>
               <input
                 type="password"
                 placeholder="Password"
                 required
-                onChange={handleSetPassword}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             {message && <span id="loginResult" className={styles.errorMessage}>{message}</span>}

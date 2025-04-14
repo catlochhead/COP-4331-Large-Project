@@ -5,9 +5,9 @@ import EditAlbumModal from './EditAlbumModal'; // You'll need to create this com
 
 interface AlbumGridProps {
   albums: Album[];
-  toggleFavorite: (albumId: number) => void;
+  toggleFavorite: (albumId: string) => void; // Ensure the type here matches the string type of _id
   updateAlbum: (updatedAlbum: Album) => void;
-  deleteAlbum: (albumId: number) => void;
+  deleteAlbum: (albumId: string) => void; // Use string here to match _id type
 }
 
 const AlbumGrid: React.FC<AlbumGridProps> = ({ 
@@ -34,9 +34,9 @@ const AlbumGrid: React.FC<AlbumGridProps> = ({
     handleCloseModal();
   };
   
-  const handleDelete = (albumId: number) => {
+  const handleDelete = (albumId: string) => { // Change to string to match _id type
     if (window.confirm('Are you sure you want to delete this album?')) {
-      deleteAlbum(albumId);
+      deleteAlbum(albumId); // Pass the string albumId here
       handleCloseModal();
     }
   };
@@ -47,10 +47,10 @@ const AlbumGrid: React.FC<AlbumGridProps> = ({
         {albums.length > 0 ? (
           albums.map(album => (
             <AlbumCard 
-              key={album.id} 
+              key={album._id} 
               album={album} 
-              toggleFavorite={() => toggleFavorite(album.id)}
-              onEdit={() => handleEdit(album)}
+              toggleFavorite={() => toggleFavorite(album._id)} // Pass string _id here
+              onEdit={() => handleEdit(album)} 
             />
           ))
         ) : (
@@ -66,7 +66,7 @@ const AlbumGrid: React.FC<AlbumGridProps> = ({
           album={editingAlbum}
           onClose={handleCloseModal}
           onSave={handleSaveChanges}
-          onDelete={() => handleDelete(editingAlbum.id)}
+          onDelete={() => handleDelete(editingAlbum._id)} // Pass string _id here
         />
       )}
     </>

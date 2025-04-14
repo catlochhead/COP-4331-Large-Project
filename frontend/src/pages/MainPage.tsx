@@ -55,20 +55,20 @@ function App() {
     setSearchQuery(e.target.value); // Update search query state
   };
 
-  const toggleFavorite = (albumId: number) => {
+  const toggleFavorite = (albumId: string) => { // Change to string to match _id type
     setAlbums(albums.map(album => 
-      album.id === albumId ? { ...album, isFavorite: !album.isFavorite } : album
+      album._id === albumId ? { ...album, isFavorite: !album.isFavorite } : album
     ));
   };
 
   const updateAlbum = (updatedAlbum: Album) => {
     setAlbums(albums.map(album => 
-      album.id === updatedAlbum.id ? updatedAlbum : album
+      album._id === updatedAlbum._id ? updatedAlbum : album
     ));
   };
 
-  const deleteAlbum = (albumId: number) => {
-    setAlbums(albums.filter(album => album.id !== albumId));
+  const deleteAlbum = (albumId: string) => { // Change to string to match _id type
+    setAlbums(albums.filter(album => album._id !== albumId));
   };
 
   return (

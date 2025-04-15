@@ -1,72 +1,65 @@
 import React, { useState } from 'react';
-// Import the image
 import logo from './logo.png';  // Adjust path if needed
+import { Album } from '../types/Album';
 
-const Navbar: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState<string>(''); // State for search query
-  const [searchResults, setSearchResults] = useState<any[]>([]); // State to store search results
-  
-  // Handle the search API call
+type NavbarProps = {
+  setSearchResults: (albums: Album[] | null) => void;
+};
+
+const Navbar: React.FC<NavbarProps> = ({ setSearchResults }) => {
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
   const searchAlbums = async (query: string) => {
     try {
-      const userId = localStorage.getItem('userId'); // Assuming the userId is stored in localStorage
-      console.log('User ID:', userId);
-
-      if (!userId) {
-        console.error('No userId found');
-        return;
-      }
-      
-      const response = await fetch(`http://localhost:5500/api/albums/search?q=${query}&userId=${userId}`, {
+      const response = await fetch(`http://localhost:5500/api/albums/search?q=${query}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include'
       });
-  
+
       const results = await response.json();
-  
+
       if (response.ok) {
-        setSearchResults(results);
+        setSearchResults(results); // Pass results to FavoritesPage
       } else {
         console.error('Search failed:', results);
-        setSearchResults([]);
+        setSearchResults(null);
       }
     } catch (err) {
       console.error('Search failed:', err);
-      setSearchResults([]);
+      setSearchResults(null);
     }
   };
-  
 
-  // Handle input change in the search bar
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
-    setSearchQuery(query);  // Update the query state
-    searchAlbums(query);  // Call search API
+    setSearchQuery(query);
+
+    if (query.trim() === '') {
+      setSearchResults(null);
+    } else {
+      searchAlbums(query);
+    }
   };
 
-  async function doLogout(event: any): Promise<void> {
-    try{
-      console.log("doLogout")
+  const doLogout = async () => {
+    try {
       const response = await fetch("http://localhost:5500/api/logout", {
         method: 'POST',
         credentials: 'include'
-      })
-      console.log("doLogout2")
-  
-      if (!response.ok){
-        console.log("error")
-      } else {
+      });
+
+      if (response.ok) {
         window.location.href = '/login';
+      } else {
+        console.error("Logout failed");
       }
-  
-    } catch (error:any) {
+    } catch (error: any) {
       alert(error.toString());
-      return;
     }
-  
-  } 
+  };
 
   return (
     <nav className="navbar">
@@ -81,19 +74,6 @@ const Navbar: React.FC = () => {
           value={searchQuery} 
           onChange={handleSearchChange} 
         />
-      </div>
-
-      {/* Display search results if any */}
-      <div className="search-results">
-        {searchResults.length > 0 ? (
-          <ul>
-            {searchResults.map((album) => (
-              <li key={album._id}>{album.title} by {album.artist}</li>
-            ))}
-          </ul>
-        ) : (
-          <p>No albums found</p>
-        )}
       </div>
       <button onClick={doLogout} className="logout-btn">Logout</button>
     </nav>

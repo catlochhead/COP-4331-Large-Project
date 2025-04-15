@@ -570,7 +570,7 @@ body {
 
 /* Form elements inside the container */
 .add-album-form .form-group {
-  margin-bottom: 15px; /* Space between each input group */
+  margin-bottom: 5px; /* Space between each input group */
 }
 
 .add-album-form label {

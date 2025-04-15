@@ -8,8 +8,8 @@ import { Album } from '../types/Album';
 function FavoritesPage() {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -29,11 +29,10 @@ function FavoritesPage() {
     fetchUserId();
   }, []);
 
-
   useEffect(() => {
     const fetchAlbums = async () => {
       try {
-        const response = await fetch('http://localhost:5500/api/albums/search', {
+        const response = await fetch(`http://localhost:5500/api/albums/search?q=${searchQuery}`, {
           credentials: 'include',
         });
 
@@ -48,18 +47,22 @@ function FavoritesPage() {
     };
 
     fetchAlbums();
-  }, []);
+  }, [searchQuery]);
 
   const favoriteAlbums = albums.filter(album => album.isFavorite);
+
+  const handleSearchResults = (albums: Album[] | null) => {
+    setAlbums(albums || []); // If no results, set empty array
+  };
 
   const toggleFavorite = async (albumId: string) => {
     const albumToUpdate = albums.find(album => album._id === albumId);
     if (!albumToUpdate || !userId) return;
-  
+
     const updatedFields = {
       isFavorite: !albumToUpdate.isFavorite
     };
-  
+
     try {
       const response = await fetch('http://localhost:5500/api/editalbum', {
         method: 'POST',
@@ -73,11 +76,10 @@ function FavoritesPage() {
           updatedFields,
         }),
       });
-  
+
       const result = await response.json();
-  
+
       if (response.ok) {
-        // Update local state only if DB update succeeded
         setAlbums(albums.map(album =>
           album._id === albumId
             ? { ...album, isFavorite: updatedFields.isFavorite }
@@ -115,9 +117,9 @@ function FavoritesPage() {
           },
         }),
       });
-  
+
       const result = await response.json();
-  
+
       if (response.ok) {
         setAlbums(albums.map(album =>
           album._id === updatedAlbum._id ? updatedAlbum : album
@@ -140,9 +142,9 @@ function FavoritesPage() {
         credentials: 'include',
         body: JSON.stringify({ albumId }),
       });
-  
+
       const result = await response.json();
-  
+
       if (response.ok && result.error === 'Album deleted') {
         setAlbums(prev => prev.filter(album => album._id !== albumId));
       } else {
@@ -157,7 +159,7 @@ function FavoritesPage() {
     <div className="app-container">
       <Sidebar />
       <div className="content-container">
-        <Navbar />
+        <Navbar setSearchResults={handleSearchResults} />
         <div className="main-content">
           {loading ? (
             <p>Loading favorites...</p>

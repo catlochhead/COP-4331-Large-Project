@@ -15,7 +15,7 @@ const Sidebar: React.FC = () => {
   <img src={miniLogo} alt="Logo" />
 </Link>
       <div
-        className={`sidebar-icon ${location.pathname === '/' ? 'active' : ''}`}
+        className={`sidebar-icon ${location.pathname === '/main' ? 'active' : ''}`}
         title="View Albums"
         onClick={() => navigate('/main')}
       >

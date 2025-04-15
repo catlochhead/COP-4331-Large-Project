@@ -35,17 +35,19 @@ const createAlbum = async (req, res) => {
 const searchAlbums = async (req, res) => {
   try {
     const { q = '' } = req.query;
+    const userId = req.userId;
 
-    // Start with filtering by user
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
     let query = {
-      user: req.userId, // Filter by logged-in user
+      user: userId,
     };
 
-    // Check if the query is a valid ObjectId (for searching by _id)
     if (mongoose.Types.ObjectId.isValid(q)) {
-      query._id = mongoose.Types.ObjectId(q); // Search by _id if the query is a valid ObjectId
+      query._id = mongoose.Types.ObjectId(q);
     } else {
-      // If it's not a valid ObjectId, use the regular text search on other fields
       const regex = new RegExp(q, 'i');
       query.$or = [
         { title: regex },
@@ -53,10 +55,9 @@ const searchAlbums = async (req, res) => {
         { favoriteTrack: regex }
       ];
     }
-    // Find albums based on the query
+
     const results = await Album.find(query);
     res.status(200).json(results);
-
   } catch (err) {
     console.error('Search failed:', err);
     res.status(500).json({ message: 'Search failed' });

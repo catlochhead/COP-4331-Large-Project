@@ -7,16 +7,13 @@ import { Album } from '../types/Album';
 
 function App() {
   const [albums, setAlbums] = useState<Album[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [userId, setUserId] = useState<string | null>(null); // state to hold userId
+  const [searchResults, setSearchResults] = useState<Album[] | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAlbums = async () => {
       try {
-        const params = new URLSearchParams();
-        params.append('query', searchQuery); // Sending the query for search
-
-        const response = await fetch(`http://localhost:5500/api/albums/search?=:id}`, {
+        const response = await fetch(`http://localhost:5500/api/albums/search`, {
           credentials: 'include',
         });
 
@@ -30,57 +27,46 @@ function App() {
     };
 
     fetchAlbums();
-  }, [searchQuery]); // Trigger effect when searchQuery changes
+  }, []);
 
   useEffect(() => {
     const fetchUserId = async () => {
       try {
         const response = await fetch('http://localhost:5500/api/current_user', {
-          credentials: 'include', // Include cookies if you're using sessions
+          credentials: 'include',
         });
-  
+
         if (!response.ok) throw new Error('Failed to fetch user data');
-  
+
         const data = await response.json();
-        setUserId(data.userId);  // Assuming 'data' contains the userId
+        setUserId(data.userId);
       } catch (err) {
         console.error('Error fetching user ID:', err);
       }
     };
-  
+
     fetchUserId();
   }, []);
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value); // Update search query state
-  };
 
   const toggleFavorite = async (albumId: string) => {
     const albumToUpdate = albums.find(album => album._id === albumId);
     if (!albumToUpdate || !userId) return;
-  
+
     const updatedFields = {
       isFavorite: !albumToUpdate.isFavorite
     };
-  
+
     try {
       const response = await fetch('http://localhost:5500/api/editalbum', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          albumId,
-          userId,
-          updatedFields,
-        }),
+        body: JSON.stringify({ albumId, userId, updatedFields }),
       });
-  
+
       const result = await response.json();
-  
+
       if (response.ok) {
-        // Update local state only if DB update succeeded
         setAlbums(albums.map(album =>
           album._id === albumId
             ? { ...album, isFavorite: updatedFields.isFavorite }
@@ -100,13 +86,11 @@ function App() {
     try {
       const response = await fetch('http://localhost:5500/api/editalbum', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
           albumId: updatedAlbum._id,
-          userId: userId,
+          userId,
           updatedFields: {
             title: updatedAlbum.title,
             artist: updatedAlbum.artist,
@@ -118,9 +102,9 @@ function App() {
           },
         }),
       });
-  
+
       const result = await response.json();
-  
+
       if (response.ok) {
         setAlbums(albums.map(album =>
           album._id === updatedAlbum._id ? updatedAlbum : album
@@ -137,15 +121,13 @@ function App() {
     try {
       const response = await fetch('http://localhost:5500/api/deletealbum', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({ albumId }),
       });
-  
+
       const result = await response.json();
-  
+
       if (response.ok && result.error === 'Album deleted') {
         setAlbums(prev => prev.filter(album => album._id !== albumId));
       } else {
@@ -160,24 +142,10 @@ function App() {
     <div className="app-container">
       <Sidebar />
       <div className="content-container">
-        <Navbar />
+        <Navbar setSearchResults={setSearchResults} />
         <div className="main-content">
-          {/* 🔍 Search Bar */}
-          <input
-            type="text"
-            placeholder="Search by _id..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="search-bar"
-          />
-          
-          {/* UserId Display */}
-          <div className="user-info">
-            <p>User ID: {userId}</p> {/* This will display the userId */}
-          </div>
-
           <AlbumGrid 
-            albums={albums}
+            albums={searchResults ?? albums}
             toggleFavorite={toggleFavorite}
             updateAlbum={updateAlbum}
             deleteAlbum={deleteAlbum}

@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import AlbumCard from './AlbumCard';
+import AlbumCard from './AlbumCard.tsx';
 import { Album } from '../types/Album';
 import EditAlbumModal from './EditAlbumModal'; // You'll need to create this component
 
 interface AlbumGridProps {
   albums: Album[];
-  toggleFavorite: (albumId: string) => void; // Ensure the type here matches the string type of _id
+  toggleFavorite: (albumId: string) => void; // Update to accept string instead of number
   updateAlbum: (updatedAlbum: Album) => void;
-  deleteAlbum: (albumId: string) => void; // Use string here to match _id type
-}
+  deleteAlbum: (albumId: string) => void; // Update to accept string instead of number
 
 const AlbumGrid: React.FC<AlbumGridProps> = ({ 
   albums, 
@@ -34,7 +33,7 @@ const AlbumGrid: React.FC<AlbumGridProps> = ({
     handleCloseModal();
   };
   
-  const handleDelete = (albumId: string) => { // Change to string to match _id type
+  const handleDelete = (albumId: string) => {  // Change to string
     if (window.confirm('Are you sure you want to delete this album?')) {
       deleteAlbum(albumId); // Pass the string albumId here
       handleCloseModal();
@@ -66,7 +65,7 @@ const AlbumGrid: React.FC<AlbumGridProps> = ({
           album={editingAlbum}
           onClose={handleCloseModal}
           onSave={handleSaveChanges}
-          onDelete={() => handleDelete(editingAlbum._id)} // Pass string _id here
+          onDelete={() => handleDelete(editingAlbum._id)}  // Ensure it's passing a string id
         />
       )}
     </>

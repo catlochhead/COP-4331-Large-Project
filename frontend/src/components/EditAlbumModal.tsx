@@ -26,7 +26,7 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+  
     const updatedAlbum: Album = {
       ...album,
       title,
@@ -36,16 +36,15 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({
       rating,
       coverUrl
     };
-
+  
     try {
-      // Send the updated album data to the backend
       const response = await fetch('http://localhost:5500/api/albums/editalbum', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          albumId: album.id, // Assuming `album._id` exists and is the correct identifier
+          albumId: album._id,
           updatedFields: {
             title,
             artist,
@@ -56,20 +55,18 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({
           }
         }),
       });
-
-      const result = await response.json();
-
       if (response.ok) {
         setSuccessMessage('Album updated successfully!');
-        onSave(updatedAlbum);  // Update the local state with the new album
+        onSave(updatedAlbum);
       } else {
-        setError(result.error || 'Failed to update the album');
-      }
-    } catch (err) {
-      console.error('Error updating album:', err);
-      setError('Error updating album');
-    }
-  };
+        let errorMsg = 'Failed to update the album';
+        try {
+          const result = await response.json();
+          errorMsg = result.error || errorMsg;
+        } catch {
+          // response had no body
+        }
+        setError(errorMsg);
 
   return (
     <div className="modal-overlay">

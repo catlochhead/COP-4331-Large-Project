@@ -3,18 +3,19 @@ import { Album } from '../types/Album';
 
 interface AlbumCardProps {
   album: Album;
-  toggleFavorite: () => void;
+  toggleFavorite: (albumId: string) => void; // Fix: now takes albumId
   onEdit?: () => void;
 }
 
 const AlbumCard: React.FC<AlbumCardProps> = ({ album, toggleFavorite, onEdit }) => {
-  const { title, artist, year, favoriteTrack, rating, isFavorite, coverUrl } = album;
-  
+  console.log("Rendering AlbumCard with ID:", album._id);
+  const { _id, title, artist, year, favoriteTrack, rating, isFavorite, coverUrl } = album;
+
   // Handle image loading errors
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     e.currentTarget.src = '/default-album-cover.png'; // Fallback to default image
   };
-  
+
   return (
     <div className="album-card">
       <div className="album-cover">
@@ -28,14 +29,16 @@ const AlbumCard: React.FC<AlbumCardProps> = ({ album, toggleFavorite, onEdit }) 
         ) : (
           <div className="album-placeholder">Album Cover</div>
         )}
+
+        {/* Favorite button */}
         <button 
           className={`favorite-btn ${isFavorite ? 'is-favorite' : 'not-favorite'}`}
-          onClick={toggleFavorite}
+          onClick={() => toggleFavorite(_id)} // ✅ Pass the album ID
           aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
         >
           <span>★</span>
         </button>
-        
+
         {/* Edit button */}
         <button 
           className="edit-btn"
@@ -45,6 +48,7 @@ const AlbumCard: React.FC<AlbumCardProps> = ({ album, toggleFavorite, onEdit }) 
           <span>✏️</span>
         </button>
       </div>
+
       <div className="album-info">
         <div className="title">
           <span>Title:</span> {title}

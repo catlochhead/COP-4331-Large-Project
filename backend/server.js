@@ -52,15 +52,19 @@ app.use((req, res, next) => {
   next();
 });
 
-// Authentication Middleware for Session-based authentication
 const authenticate = (req, res, next) => {
-  if (!req.session.userId) {
-    return res.status(401).json({ message: 'Authentication required' });
-  }
-  
   req.userId = req.session.userId;  // Attach userId to the request object
+
+  if (!req.session.userId) {
+    console.log('Authentication failed: No session userId'); // Log if authentication fails (for debugging)
+    return res.status(401).json({ message: 'Authentication required' }); // If no userId, return 401
+  }
+
+  // Authentication successful, proceed to the next middleware or route handler
+  console.log(`Authenticated userId: ${req.session.userId}`);  // Optional: log authenticated userId
   next();
 };
+
 
 app.get('/api/current_user', (req, res) => {
   if (!req.session || !req.session.userId) {
@@ -77,13 +81,17 @@ app.post("/api/users/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    const user = await UserModel.findOne({ username, password });
+    const user = await UserModel.findOne({ username });
     if (!user) return res.status(401).json({ error: "Invalid username or password" });
+
+    // Compare the passwords directly (without hashing)
+    if (user.password !== password) return res.status(401).json({ error: "Invalid username or password" });
 
     // Store userId in the session
     req.session.userId = user._id;
+    console.log(user._id);
 
-    res.status(200).json({ username: user.username });
+    res.status(200).json({ username: user.username, userId: user._id});
   } catch (err) {
     res.status(500).json({ error: "Database error" });
   }

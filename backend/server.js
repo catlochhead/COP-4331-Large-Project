@@ -132,7 +132,7 @@ app.post('/api/deletealbum', async (req, res) => {
 
   try {
     const db = client.db();
-    const result = await db.collection('Albums').deleteOne({ _id: new ObjectId(albumId) });
+    const result = await db.collection('albums').deleteOne({ _id: new ObjectId(albumId) });
     error = result.deletedCount === 1 ? 'Album deleted' : 'Album not deleted';
   } catch (e) {
     error = e.toString();
@@ -148,7 +148,7 @@ app.post('/api/editalbum', async (req, res) => {
 
   try {
     const db = client.db();
-    const result = await db.collection('Albums').updateOne(
+    const result = await db.collection('albums').updateOne(
       { _id: new ObjectId(albumId) },
       { $set: updatedFields }
     );
@@ -160,6 +160,18 @@ app.post('/api/editalbum', async (req, res) => {
 
   res.status(200).json({ error });
 });
+
+// For making sure edit and delete do what they say they do
+app.get('/api/testdb', async (req, res) => {
+  try {
+    const db = client.db();
+    const albums = await db.collection('albums').find().toArray();
+    res.json(albums);
+  } catch (e) {
+    res.status(500).json({ error: e.toString() });
+  }
+});
+
 
 // Real-Time Fraud Detection System (Simulated Lock-Free Set)
 const suspiciousTransactions = new Set();

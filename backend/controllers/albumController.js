@@ -64,5 +64,7 @@ const searchAlbums = async (req, res) => {
 };
 
 
-
-module.exports = { createAlbum, searchAlbums };
+module.exports = {
+  createAlbum,
+  searchAlbums
+};

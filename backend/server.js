@@ -38,6 +38,8 @@ app.use(session({
   }
 }));
 
+
+
 // CORS Headers for other configurations
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", 'http://localhost:5173'); // Set your frontend's URL here
@@ -74,7 +76,7 @@ app.get('/api/current_user', (req, res) => {
 });
 
 // Routes
-app.use('/api/Albums', authenticate, AlbumRoutes);
+app.use('/api/albums', authenticate, AlbumRoutes);
 
 // Login Route
 app.post("/api/users/login", async (req, res) => {
@@ -172,6 +174,8 @@ app.get('/api/testdb', async (req, res) => {
   }
 });
 
+const Album = require('./models/Album');
+
 
 // Real-Time Fraud Detection System (Simulated Lock-Free Set)
 const suspiciousTransactions = new Set();
@@ -193,6 +197,7 @@ app.post('/api/fraud/remove', (req, res) => {
   const wasDeleted = suspiciousTransactions.delete(transactionId);
   res.status(200).json({ message: wasDeleted ? "Removed" : "Not found" });
 });
+
 
 // Start Server
 mongoose.connect(url)

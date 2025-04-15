@@ -55,20 +55,105 @@ function App() {
     setSearchQuery(e.target.value); // Update search query state
   };
 
-  const toggleFavorite = (albumId: string) => { // Change to string to match _id type
-    setAlbums(albums.map(album => 
-      album._id === albumId ? { ...album, isFavorite: !album.isFavorite } : album
-    ));
+  const toggleFavorite = async (albumId: string) => {
+    const albumToUpdate = albums.find(album => album._id === albumId);
+    if (!albumToUpdate || !userId) return;
+  
+    const updatedFields = {
+      isFavorite: !albumToUpdate.isFavorite
+    };
+  
+    try {
+      const response = await fetch('http://localhost:5500/api/editalbum', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          albumId,
+          userId,
+          updatedFields,
+        }),
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        // Update local state only if DB update succeeded
+        setAlbums(albums.map(album =>
+          album._id === albumId
+            ? { ...album, isFavorite: updatedFields.isFavorite }
+            : album
+        ));
+      } else {
+        console.error('Failed to toggle favorite:', result.error);
+      }
+    } catch (err) {
+      console.error('Error toggling favorite:', err);
+    }
   };
 
-  const updateAlbum = (updatedAlbum: Album) => {
-    setAlbums(albums.map(album => 
-      album._id === updatedAlbum._id ? updatedAlbum : album
-    ));
+  const updateAlbum = async (updatedAlbum: Album) => {
+    if (!userId) return;
+
+    try {
+      const response = await fetch('http://localhost:5500/api/editalbum', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          albumId: updatedAlbum._id,
+          userId: userId,
+          updatedFields: {
+            title: updatedAlbum.title,
+            artist: updatedAlbum.artist,
+            year: updatedAlbum.year,
+            favoriteTrack: updatedAlbum.favoriteTrack,
+            rating: updatedAlbum.rating,
+            isFavorite: updatedAlbum.isFavorite,
+            coverUrl: updatedAlbum.coverUrl
+          },
+        }),
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        setAlbums(albums.map(album =>
+          album._id === updatedAlbum._id ? updatedAlbum : album
+        ));
+      } else {
+        console.error('Failed to update album:', result.error);
+      }
+    } catch (err) {
+      console.error('Error updating album:', err);
+    }
   };
 
-  const deleteAlbum = (albumId: string) => { // Change to string to match _id type
-    setAlbums(albums.filter(album => album._id !== albumId));
+  const deleteAlbum = async (albumId: string) => {
+    try {
+      const response = await fetch('http://localhost:5500/api/deletealbum', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ albumId }),
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok && result.error === 'Album deleted') {
+        setAlbums(prev => prev.filter(album => album._id !== albumId));
+      } else {
+        console.error('Failed to delete album:', result.error);
+      }
+    } catch (err) {
+      console.error('Error deleting album:', err);
+    }
   };
 
   return (

@@ -1,115 +1,99 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/App.css';
 import Navbar from '../components/Navbar';
-import AlbumGrid from '../components/AlbumGrid';
 import Sidebar from '../components/Sidebar';
+import AlbumGrid from '../components/AlbumGrid';
 import { Album } from '../types/Album';
 
-// Define the Album interface
+function FavoritesPage() {
+  const [albums, setAlbums] = useState<Album[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-function App() {
-  // Example albums data with Wikipedia cover images
-  const [albums, setAlbums] = useState<Album[]>([
-    {
-      id: 1,
-      title: "Dark Side of the Moon",
-      artist: "Pink Floyd",
-      year: "1973",
-      favoriteTrack: "Time",
-      rating: 9,
-      isFavorite: true,
-      coverUrl: "https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png"
-    },
-    {
-      id: 2,
-      title: "Random Access Memories",
-      artist: "Daft Punk",
-      year: "2013",
-      favoriteTrack: "Get Lucky",
-      rating: 8,
-      isFavorite: true,
-      coverUrl: "https://cdn-images.dzcdn.net/images/cover/311bba0fc112d15f72c8b5a65f0456c1/1900x1900-000000-80-0-0.jpg"
-    },
-    {
-      id: 3,
-      title: "Abbey Road",
-      artist: "The Beatles",
-      year: "1969",
-      favoriteTrack: "Here Comes The Sun",
-      rating: 10,
-      isFavorite: false,
-      coverUrl: "https://upload.wikimedia.org/wikipedia/en/4/42/Beatles_-_Abbey_Road.jpg"
-    },
-    {
-      id: 4,
-      title: "To Pimp a Butterfly",
-      artist: "Kendrick Lamar",
-      year: "2015",
-      favoriteTrack: "Alright",
-      rating: 9,
-      isFavorite: true,
-      coverUrl: "https://upload.wikimedia.org/wikipedia/en/f/f6/Kendrick_Lamar_-_To_Pimp_a_Butterfly.png"
-    },
-    {
-      id: 5,
-      title: "Blue",
-      artist: "Joni Mitchell",
-      year: "1971",
-      favoriteTrack: "River",
-      rating: 9,
-      isFavorite: false,
-      coverUrl: "https://upload.wikimedia.org/wikipedia/en/e/e1/Bluealbumcover.jpg"
-    },
-    {
-      id: 6,
-      title: "Rumours",
-      artist: "Fleetwood Mac",
-      year: "1977",
-      favoriteTrack: "The Chain",
-      rating: 9,
-      isFavorite: true,
-      coverUrl: "https://upload.wikimedia.org/wikipedia/en/f/fb/FMacRumours.PNG"
-    }
-  ]);
-  
-  // Toggle favorite status for an album
-  const toggleFavorite = (albumId: number) => {
-    setAlbums(albums.map(album => 
-      album.id === albumId ? { ...album, isFavorite: !album.isFavorite } : album
-    ));
+  // ✅ Fetch user ID
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const res = await fetch('http://localhost:5500/api/current_user', {
+          credentials: 'include',
+        });
+
+        if (!res.ok) throw new Error('Failed to fetch user');
+        const data = await res.json();
+        setUserId(data.userId);
+      } catch (err) {
+        console.error('Error fetching user ID:', err);
+      }
+    };
+
+    fetchUserId();
+  }, []);
+
+  // ✅ Fetch all albums using existing working route
+  useEffect(() => {
+    const fetchAlbums = async () => {
+      try {
+        const response = await fetch('http://localhost:5500/api/albums/search', {
+          credentials: 'include',
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch albums');
+        const data: Album[] = await response.json();
+        setAlbums(data);
+      } catch (err) {
+        console.error('Error fetching albums:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAlbums();
+  }, []);
+
+  const favoriteAlbums = albums.filter(album => album.favorite);
+
+  const toggleFavorite = (albumId: string) => {
+    setAlbums(prev =>
+      prev.map(album =>
+        album._id === albumId ? { ...album, favorite: !album.favorite } : album
+      )
+    );
   };
-  
-  // Update album details
+
+  const deleteAlbum = (albumId: string) => {
+    setAlbums(prev => prev.filter(album => album._id !== albumId));
+  };
+
   const updateAlbum = (updatedAlbum: Album) => {
-    setAlbums(albums.map(album => 
-      album.id === updatedAlbum.id ? updatedAlbum : album
-    ));
-  };
-  
-  // Delete an album
-  const deleteAlbum = (albumId: number) => {
-    setAlbums(albums.filter(album => album.id !== albumId));
+    setAlbums(prev =>
+      prev.map(album =>
+        album._id === updatedAlbum._id ? updatedAlbum : album
+      )
+    );
   };
 
   return (
     <div className="app-container">
-      {/* Sidebar */}
       <Sidebar />
-      
-      {/* Main Content */}
       <div className="content-container">
         <Navbar />
         <div className="main-content">
-        <AlbumGrid 
-            albums={albums.filter(album => album.isFavorite)} 
-            toggleFavorite={toggleFavorite}
-            updateAlbum={updateAlbum}
-            deleteAlbum={deleteAlbum}
+          {loading ? (
+            <p>Loading favorites...</p>
+          ) : favoriteAlbums.length === 0 ? (
+            <p>No favorite albums yet. Mark some as favorites!</p>
+          ) : (
+            <AlbumGrid
+              albums={favoriteAlbums}
+              toggleFavorite={toggleFavorite}
+              updateAlbum={updateAlbum}
+              deleteAlbum={deleteAlbum}
             />
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export default App;
+export default FavoritesPage;

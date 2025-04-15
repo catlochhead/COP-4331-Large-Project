@@ -11,13 +11,13 @@ const Sidebar: React.FC = () => {
   return (
     <div className="sidebar">
       {/* Album/Home Icon */}
-      <Link to="/" className="sidebar-logo" title="Go to Main Page">
+      <Link to="/main" className="sidebar-logo" title="Go to Main Page">
   <img src={miniLogo} alt="Logo" />
 </Link>
       <div
         className={`sidebar-icon ${location.pathname === '/' ? 'active' : ''}`}
         title="View Albums"
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/main')}
       >
         {/* Home SVG */}
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"

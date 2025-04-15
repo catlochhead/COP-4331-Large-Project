@@ -1,4 +1,5 @@
 const Album = require('../models/Album');
+const mongoose = require('mongoose');
 
 const createAlbum = async (req, res) => {
   try {
@@ -34,17 +35,25 @@ const createAlbum = async (req, res) => {
 const searchAlbums = async (req, res) => {
   try {
     const { q = '' } = req.query;
-    const regex = new RegExp(q, 'i');
 
-    const query = {
-      user: req.userId, // Comes from authenticate middleware
-      $or: [
+    // Start with filtering by user
+    let query = {
+      user: req.userId, // Filter by logged-in user
+    };
+
+    // Check if the query is a valid ObjectId (for searching by _id)
+    if (mongoose.Types.ObjectId.isValid(q)) {
+      query._id = mongoose.Types.ObjectId(q); // Search by _id if the query is a valid ObjectId
+    } else {
+      // If it's not a valid ObjectId, use the regular text search on other fields
+      const regex = new RegExp(q, 'i');
+      query.$or = [
         { title: regex },
         { artist: regex },
         { favoriteTrack: regex }
-      ]
-    };
-
+      ];
+    }
+    // Find albums based on the query
     const results = await Album.find(query);
     res.status(200).json(results);
 
@@ -53,5 +62,7 @@ const searchAlbums = async (req, res) => {
     res.status(500).json({ message: 'Search failed' });
   }
 };
+
+
 
 module.exports = { createAlbum, searchAlbums };

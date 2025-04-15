@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../styles/App.css';
 import AddAlbumForm from '../components/AddAlbumForm';  // Import the AddAlbumForm component
 import { Album } from '../types/Album';
-import Navbar from '../components/Navbar';
+import Sidebar from '../components/Sidebar';
 
 const CreateAlbumPage: React.FC = () => {
   const [albums, setAlbums] = useState<Album[]>([]);  // Store albums
@@ -38,7 +38,7 @@ const CreateAlbumPage: React.FC = () => {
   return (
     <div className="create-album-page">
       {/* Navbar component (if you have it for navigation) */}
-      <Navbar />
+      <Sidebar />
 
       {/* AddAlbumForm component to handle the album creation */}
       <AddAlbumForm onAddAlbum={handleAddAlbum} />

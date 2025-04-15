@@ -11,7 +11,7 @@ const cors = require('cors');
 const app = express();
 
 // MongoDB connection
-const url = process.env.MONGO_URI || "mongodb+srv://cop4331:group6@cluster0.owhoofa.mongodb.net/album-app?retryWrites=true&w=majority";
+const url = "mongodb+srv://cop4331:group6@cluster0.owhoofa.mongodb.net/cop4331?retryWrites=true&w=majority";
 const client = new MongoClient(url);
 client.connect();
 
@@ -66,6 +66,13 @@ const authenticate = (req, res, next) => {
 };
 
 
+app.get('/api/current_user', (req, res) => {
+  if (!req.session || !req.session.userId) {
+    return res.status(401).json({ message: 'User not logged in' });
+  }
+  res.json({ userId: req.session.userId });
+});
+
 // Routes
 app.use('/api/Albums', authenticate, AlbumRoutes);
 
@@ -108,14 +115,15 @@ app.post("/api/users/register", async (req, res) => {
 });
 
 // Logout Route (Clear Session)
-app.post("/logout", (req, res) => {
+app.post("/api/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ message: 'Logout failed' });
     }
+    res.clearCookie('connect.sid');
     res.status(200).json({ message: 'Logout successful' });
   });
-});
+  });
 
 // Delete Album
 app.post('/api/deletealbum', async (req, res) => {

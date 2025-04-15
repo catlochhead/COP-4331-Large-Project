@@ -8,7 +8,6 @@ interface AlbumGridProps {
   toggleFavorite: (albumId: string) => void; // Update to accept string instead of number
   updateAlbum: (updatedAlbum: Album) => void;
   deleteAlbum: (albumId: string) => void; // Update to accept string instead of number
-}
 
 const AlbumGrid: React.FC<AlbumGridProps> = ({ 
   albums, 
@@ -36,7 +35,7 @@ const AlbumGrid: React.FC<AlbumGridProps> = ({
   
   const handleDelete = (albumId: string) => {  // Change to string
     if (window.confirm('Are you sure you want to delete this album?')) {
-      deleteAlbum(albumId);
+      deleteAlbum(albumId); // Pass the string albumId here
       handleCloseModal();
     }
   };
@@ -49,8 +48,8 @@ const AlbumGrid: React.FC<AlbumGridProps> = ({
             <AlbumCard 
               key={album._id} 
               album={album} 
-              toggleFavorite={() => toggleFavorite(album._id)}  // Ensure it's passing a string id
-              onEdit={() => handleEdit(album)}
+              toggleFavorite={() => toggleFavorite(album._id)} // Pass string _id here
+              onEdit={() => handleEdit(album)} 
             />
           ))
         ) : (

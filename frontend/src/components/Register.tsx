@@ -17,18 +17,18 @@ function Register()
       return;
     }
 
-    var obj = { login: loginName, password: password };
+    var obj = { username : loginName, password: password };
     var js = JSON.stringify(obj);
     console.log(js);
 
     try {
-      const response = await fetch('http://localhost:5000/api/users/register/login',
+      const response = await fetch('http://localhost:5500/api/users/register',
         { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
 
       var res = JSON.parse(await response.text());
 
-      if (res.id <= 0) {
-        setMessage('User/Password combination incorrect');
+      if (!response.ok) {
+        setMessage('Username already used');
       }
       else {
         var user = { firstName: res.firstName, lastName: res.lastName, id: res.id }

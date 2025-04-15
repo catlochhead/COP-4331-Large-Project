@@ -55,7 +55,6 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({
           }
         }),
       });
-  
       if (response.ok) {
         setSuccessMessage('Album updated successfully!');
         onSave(updatedAlbum);
@@ -68,13 +67,6 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({
           // response had no body
         }
         setError(errorMsg);
-      }
-    } catch (err) {
-      console.error('Error updating album:', err);
-      setError('Error updating album');
-    }
-  };
-  
 
   return (
     <div className="modal-overlay">

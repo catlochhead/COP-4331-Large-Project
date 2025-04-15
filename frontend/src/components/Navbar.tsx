@@ -46,6 +46,28 @@ const Navbar: React.FC = () => {
     searchAlbums(query);  // Call search API
   };
 
+  async function doLogout(event: any): Promise<void> {
+    try{
+      console.log("doLogout")
+      const response = await fetch("http://localhost:5500/api/logout", {
+        method: 'POST',
+        credentials: 'include'
+      })
+      console.log("doLogout2")
+  
+      if (!response.ok){
+        console.log("error")
+      } else {
+        window.location.href = '/login';
+      }
+  
+    } catch (error:any) {
+      alert(error.toString());
+      return;
+    }
+  
+  } 
+
   return (
     <nav className="navbar">
       <div className="brand">
@@ -60,7 +82,6 @@ const Navbar: React.FC = () => {
           onChange={handleSearchChange} 
         />
       </div>
-      <button className="logout-btn">Logout</button>
 
       {/* Display search results if any */}
       <div className="search-results">
@@ -74,6 +95,7 @@ const Navbar: React.FC = () => {
           <p>No albums found</p>
         )}
       </div>
+      <button onClick={doLogout} className="logout-btn">Logout</button>
     </nav>
   );
 };
